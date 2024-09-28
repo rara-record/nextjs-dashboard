@@ -6,6 +6,7 @@ import {
   useRouter,
   useSearchParams,
 } from 'next/navigation';
+import { useDebouncedCallback } from 'use-debounce';
 
 // defaultValue vs. value / Controlled vs. Uncontrolled
 //상태를 사용하여 입력 값을 관리하는 경우 value 속성을 ​​사용하여 이를 제어되는 구성 요소로 만듭니다.
@@ -28,7 +29,9 @@ export default function Search({
   const pathname = usePathname();
   const { replace } = useRouter();
 
-  function handleSearch(term: string) {
+  const handleSearch = useDebouncedCallback((term: string) => {
+    console.log(`Searching... ${term}`);
+
     const params = new URLSearchParams(searchParams);
     if (term) {
       params.set('query', term);
@@ -39,7 +42,7 @@ export default function Search({
     replace(`${pathname}?${params.toString()}`);
 
     // pathname : /dashboard/invoices
-  }
+  }, 300);
 
   return (
     <div className="relative flex flex-1 flex-shrink-0">
