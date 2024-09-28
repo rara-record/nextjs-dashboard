@@ -96,12 +96,41 @@ export async function fetchCardData() {
 }
 
 const ITEMS_PER_PAGE = 6;
+// 청구서 정보와 관련 고객 정보를 함께 검색합니다.
 export async function fetchFilteredInvoices(
   query: string,
   currentPage: number
 ) {
   const offset = (currentPage - 1) * ITEMS_PER_PAGE;
 
+  /**
+   * FROM invoices
+   * JOIN customers ON invoices.customer_id = customers.id
+   * invoices 테이블을 기본 테이블로 사용합니다.
+   * customers 테이블과 조인하며, 조인 조건은 invoices의 customer_id가 customers의 id와 일치하는 것입니다.
+   *
+   *
+   * WHERE
+      customers.name ILIKE ${`%${query}%`} OR
+      customers.email ILIKE ${`%${query}%`} OR
+      invoices.amount::text ILIKE ${`%${query}%`} OR
+      invoices.date::text ILIKE ${`%${query}%`} OR
+      invoices.status ILIKE ${`%${query}%`}
+   * ILIKE는 대소문자를 구분하지 않는 패턴 매칭
+   * %는 와일드카드로, 어떤 문자열이든 매칭됩니다.
+   * ${%${query}%}는 JavaScript 템플릿 리터럴로, 동적으로 검색어를 삽입합니다.
+   * ::text는 amount와 date를 텍스트로 변환하여 문자열 검색을 가능하게 합니다.
+   *
+   *
+   * ORDER BY invoices.date DESC
+   * 결과를 invoices의 date 필드를 기준으로 내림차순 정렬합니다.
+   *
+   *
+   * LIMIT ${ITEMS_PER_PAGE} OFFSET ${offset}
+   * LIMIT은 반환할 최대 행 수를 지정합니다 (페이지당 항목 수).
+   * OFFSET은 결과 집합에서 건너뛸 행 수를 지정합니다 (페이지네이션에 사용).
+   *
+   */
   try {
     const invoices = await sql<InvoicesTable>`
       SELECT
