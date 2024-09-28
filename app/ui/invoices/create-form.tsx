@@ -7,14 +7,29 @@ import {
   UserCircleIcon,
 } from '@heroicons/react/24/outline';
 import { Button } from '@/app/ui/button';
+import { createInvoice } from '@/app/lib/actions';
 
-export default function Form({ customers }: { customers: CustomerField[] }) {
+/**
+ * HTML에서는 action 속성에 URL을 전달합니다. 이 URL은 양식 데이터를 제출해야 하는 대상(일반적으로 API 엔드포인트)입니다.
+ * 그러나 React에서 action 속성은 특별한 prop으로 간주됩니다. 즉, React가 그 위에 작업을 호출할 수 있도록 빌드한다는 의미입니다.
+ * 뒤에서 서버 작업은 POST API 엔드포인트를 생성합니다.
+ * 이것이 바로 서버 작업을 사용할 때 API 엔드포인트를 수동으로 생성할 필요가 없는 이유입니다.
+ */
+
+export default function Form({
+  customers,
+}: {
+  customers: CustomerField[];
+}) {
   return (
-    <form>
+    <form action={createInvoice}>
       <div className="rounded-md bg-gray-50 p-4 md:p-6">
         {/* Customer Name */}
         <div className="mb-4">
-          <label htmlFor="customer" className="mb-2 block text-sm font-medium">
+          <label
+            htmlFor="customer"
+            className="mb-2 block text-sm font-medium"
+          >
             Choose customer
           </label>
           <div className="relative">
@@ -39,7 +54,10 @@ export default function Form({ customers }: { customers: CustomerField[] }) {
 
         {/* Invoice Amount */}
         <div className="mb-4">
-          <label htmlFor="amount" className="mb-2 block text-sm font-medium">
+          <label
+            htmlFor="amount"
+            className="mb-2 block text-sm font-medium"
+          >
             Choose an amount
           </label>
           <div className="relative mt-2 rounded-md">
