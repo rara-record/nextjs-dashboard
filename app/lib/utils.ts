@@ -52,27 +52,27 @@ export const generatePagination = (
   currentPage: number,
   totalPages: number
 ) => {
-  // If the total number of pages is 7 or less,
-  // display all pages without any ellipsis.
+  // 총 페이지 수가 7 이하인 경우,
+  // 줄임표 없이 모든 페이지를 표시합니다.
   if (totalPages <= 7) {
     return Array.from({ length: totalPages }, (_, i) => i + 1);
   }
 
-  // If the current page is among the first 3 pages,
-  // show the first 3, an ellipsis, and the last 2 pages.
+  // 현재 페이지가 처음 3 페이지 중 하나인 경우,
+  // 처음 3개, 줄임표, 그리고 마지막 2개 페이지를 표시합니다..
   if (currentPage <= 3) {
     return [1, 2, 3, '...', totalPages - 1, totalPages];
   }
 
-  // If the current page is among the last 3 pages,
-  // show the first 2, an ellipsis, and the last 3 pages.
+  // 현재 페이지가 마지막 3 페이지 중 하나인 경우,
+  // 처음 2개, 줄임표, 그리고 마지막 3개 페이지를 표시합니다.
   if (currentPage >= totalPages - 2) {
     return [1, 2, '...', totalPages - 2, totalPages - 1, totalPages];
   }
 
-  // If the current page is somewhere in the middle,
-  // show the first page, an ellipsis, the current page and its neighbors,
-  // another ellipsis, and the last page.
+  // 현재 페이지가 중간 어딘가에 있는 경우,
+  // 첫 페이지, 줄임표, 현재 페이지와 그 이웃,
+  // 또 다른 줄임표, 그리고 마지막 페이지를 표시합니다.
   return [
     1,
     '...',
