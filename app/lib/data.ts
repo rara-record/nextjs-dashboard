@@ -50,11 +50,12 @@ export async function fetchLatestInvoices() {
 
 export async function fetchCardData() {
   try {
-    // You can probably combine these into a single SQL query
-    // However, we are intentionally splitting them to demonstrate
-    // how to initialize multiple queries in parallel with JS.
+    // 금액을 합산하는 쿼리를 실행합니다.
     const invoiceCountPromise = sql`SELECT COUNT(*) FROM invoices`;
     const customerCountPromise = sql`SELECT COUNT(*) FROM customers`;
+
+    // status가 'paid'인 경우 해당 amount를 더하고, 그렇지 않은 경우 0을 더한다 (즉 무시한다)
+    // status가 'pending'인 경우 해당 amount를 더하고, 그렇지 않은 경우 0을 더한다 (즉 무시한다)
     const invoiceStatusPromise = sql`SELECT
          SUM(CASE WHEN status = 'paid' THEN amount ELSE 0 END) AS "paid",
          SUM(CASE WHEN status = 'pending' THEN amount ELSE 0 END) AS "pending"
