@@ -11,8 +11,8 @@ import { formatCurrency } from './utils';
 
 export async function fetchRevenue() {
   try {
-    // Artificially delay a response for demo purposes.
-    // Don't do this in production :)
+    // 데모 목적으로 응답을 인위적으로 지연합니다.
+    // 프로덕션에서 이렇게 하지 마세요 :)
 
     // console.log('Fetching revenue data...');
     // await new Promise((resolve) => setTimeout(resolve, 3000));
@@ -68,8 +68,12 @@ export async function fetchCardData() {
 
     const numberOfInvoices = Number(data[0].rows[0].count ?? '0');
     const numberOfCustomers = Number(data[1].rows[0].count ?? '0');
-    const totalPaidInvoices = formatCurrency(data[2].rows[0].paid ?? '0');
-    const totalPendingInvoices = formatCurrency(data[2].rows[0].pending ?? '0');
+    const totalPaidInvoices = formatCurrency(
+      data[2].rows[0].paid ?? '0'
+    );
+    const totalPendingInvoices = formatCurrency(
+      data[2].rows[0].pending ?? '0'
+    );
 
     return {
       numberOfCustomers,
@@ -86,7 +90,7 @@ export async function fetchCardData() {
 const ITEMS_PER_PAGE = 6;
 export async function fetchFilteredInvoices(
   query: string,
-  currentPage: number,
+  currentPage: number
 ) {
   const offset = (currentPage - 1) * ITEMS_PER_PAGE;
 
@@ -132,7 +136,9 @@ export async function fetchInvoicesPages(query: string) {
       invoices.status ILIKE ${`%${query}%`}
   `;
 
-    const totalPages = Math.ceil(Number(count.rows[0].count) / ITEMS_PER_PAGE);
+    const totalPages = Math.ceil(
+      Number(count.rows[0].count) / ITEMS_PER_PAGE
+    );
     return totalPages;
   } catch (error) {
     console.error('Database Error:', error);
