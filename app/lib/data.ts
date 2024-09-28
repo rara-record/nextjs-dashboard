@@ -30,6 +30,12 @@ export async function fetchRevenue() {
 
 export async function fetchLatestInvoices() {
   try {
+    // 데모 목적으로 응답을 인위적으로 지연합니다.
+    // 프로덕션에서 이렇게 하지 마세요 :)
+
+    console.log('Fetching revenue data...');
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+
     const data = await sql<LatestInvoiceRaw>`
       SELECT invoices.amount, customers.name, customers.image_url, customers.email, invoices.id
       FROM invoices
