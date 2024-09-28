@@ -13,6 +13,12 @@ import {
 //그러나 상태를 사용하지 않으므로 defaultValue 을 사용할 수 있습니다.
 // 이는 기본 입력이 자체 상태를 관리한다는 의미입니다.상태 대신 URL에 검색어를 저장하므로 괜찮습니다.
 
+/**
+ * replace는 현재 URL을 새로운 검색 쿼리가 포함된 URL로 교체합니다.
+ * 이는 사용자가 입력 필드에 타이핑할 때마다 URL이 실시간으로 업데이트되도록 합니다.
+ * 이러한 방식으로 replace를 사용하면, 단일 페이지 애플리케이션(SPA)의 동적인 특성을 유지하면서도 URL을 통한 상태 관리의 이점을 얻을 수 있습니다.
+ */
+
 export default function Search({
   placeholder,
 }: {
@@ -30,7 +36,6 @@ export default function Search({
       params.delete('query');
     }
 
-    // replace는 현재 URL을 새로운 URL로 교체합니다. 이 경우, 검색 쿼리를 URL에 반영하여 현재 페이지의 상태를 URL에 동기화합니다.
     replace(`${pathname}?${params.toString()}`);
 
     // pathname : /dashboard/invoices
