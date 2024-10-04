@@ -14,6 +14,7 @@ const FormSchema = z.object({
   date: z.string(),
 });
 
+/************* Create *************/
 const CreateInvoice = FormSchema.omit({ id: true, date: true });
 
 export async function createInvoice(formData: FormData) {
@@ -36,10 +37,16 @@ export async function createInvoice(formData: FormData) {
   const serverDate = new Date(); // 서버의 현재 시간
   const date = format(serverDate, 'yyyy-MM-dd'); // 송장 생성 날짜
 
-  await sql`
+  try {
+    await sql`
     INSERT INTO invoices (customer_id, amount, status, date)
     VALUES (${customerId}, ${amountInCents}, ${status}, ${date})
   `;
+  } catch (error) {
+    return {
+      message: `Database Error: Failed to Create Invoice. ${error}`,
+    };
+  }
 
   // Next.js에는 한동안 사용자 브라우저에 경로 세그먼트를 저장하는 클라이언트 측 라우터 캐시가 있습니다.
   // 프리페칭과 함께 이 캐시를 사용하면 사용자가 서버에 대한 요청 수를 줄이면서 경로 간을 빠르게 탐색할 수 있지만,
@@ -49,4 +56,45 @@ export async function createInvoice(formData: FormData) {
   // 데이터베이스가 업데이트되면 /dashboard/invoices 경로의 유효성이 다시 검사되고 서버에서 새로운 데이터를 가져옵니다.
   // 이 시점에서 사용자를 다시 /dashboard/invoices 페이지로 리디렉션하려고 합니다.
   redirect('/dashboard/invoices');
+}
+
+/************* Update *************/
+const UpdateInvoice = FormSchema.omit({ id: true, date: true });
+
+export async function updateInvoice(id: string, formData: FormData) {
+  const { customerId, amount, status } = UpdateInvoice.parse({
+    customerId: formData.get('customerId'),
+    amount: formData.get('amount'),
+    status: formData.get('status'),
+  });
+
+  const amountInCents = amount * 100;
+
+  try {
+    await sql`
+    UPDATE invoices
+    SET customer_id = ${customerId}, amount = ${amountInCents}, status = ${status}
+    WHERE id = ${id}
+  `;
+  } catch (error) {
+    return {
+      message: `Database Error: Failed to Update Invoice. ${error}`,
+    };
+  }
+
+  revalidatePath('/dashboard/invoices');
+  redirect('/dashboard/invoices');
+}
+
+/************* Delete *************/
+export async function deleteInvoice(id: string) {
+  // throw new Error('Failed to Delete Invoice');
+
+  try {
+    await sql`DELETE FROM invoices WHERE id = ${id}`;
+    revalidatePath('/dashboard/invoices');
+    return { message: 'Deleted Invoice.' };
+  } catch (error) {
+    return { message: 'Database Error: Failed to Delete Invoice.' };
+  }
 }
